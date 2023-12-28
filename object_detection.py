@@ -4,10 +4,6 @@ import av
 import logging
 import os
 import tempfile
-# Set the environment variable
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-logging.basicConfig(level=logging.WARNING)
-st.set_page_config(page_title="Ai Object Detection", page_icon="🤖")
 from PIL import Image
 from ultralytics import YOLO
 import cv2
@@ -22,6 +18,11 @@ from streamlit_webrtc import (
 import supervision as sv
 import numpy as np
 
+
+# Set the environment variable
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+logging.basicConfig(level=logging.WARNING)
+st.set_page_config(page_title="Object Detection", page_icon="🤖🤖")
 
 # Define the zone polygon
 zone_polygon_m = np.array([[160, 100], 
@@ -66,7 +67,7 @@ zone_annotator = sv.PolygonZoneAnnotator(
     text_scale=2
 )
 
-def draw_annotations(frame, boxes, masks, names):
+def draw_annotations(frame, frame_number,boxes, masks, names):
     for box, name in zip(boxes, names):
         color = (0, 255, 0)  # Green color for bounding boxes
 
@@ -90,12 +91,13 @@ def draw_annotations(frame, boxes, masks, names):
 
 
 def main():
-    st.title("🤖 Ai Object Detection")
-    st.subheader("YOLOv8 & Streamlit WebRTC Integration :)")
+    st.title("🤖 AnalyticaVision")
+    st.subheader("YOLOv8 & Streamlit WebRTC Integration")
     st.sidebar.title("Select an option ⤵️")
     choice = st.sidebar.radio("", ("Live Webcam Predict", "Capture Image And Predict",":rainbow[Multiple Images Upload -]🖼️🖼️🖼️", "Upload Video"),
                             captions = ["Live Count in Zone. :red[(Slow)]🐌", "Click and Detect. :orange[(Recommended)] :green[(Super Fast)]⚡⚡", "Upload & Process Multiple Images. :orange[(Recommended)] :green[(Fast)]⚡", "Upload Video & Predict 🏗️:orange[(Work in Progress)]📽️🎞️"], index = 1)
     conf = st.slider("Score threshold", 0.0, 1.0, 0.3, 0.05)
+
     if choice == "Live Webcam Predict":
         # conf = st.slider("Score threshold", 0.0, 1.0, 0.5, 0.05)
 
@@ -243,9 +245,11 @@ def main():
             st.write(':orange[ Info : ⤵️ ]')
             st.json(labels1)
             st.subheader("",divider='rainbow')
+    
     elif choice == "Upload Video":
         st.title("🏗️Work in Progress📽️🎞️")
-        '''# Gaurang is Working on it...
+        
+        # Agus is Working on it...
         clip = st.file_uploader("Choose a video file", type=['mp4'])
 
         if clip:
@@ -312,9 +316,9 @@ def main():
 
 
 
-                # # video_content1 = results.read()
-                # # Convert the video content to a bytes buffer
-                # video_buffer1 = BytesIO(results)
+                video_content1 = results.read()
+                # Convert the video content to a bytes buffer
+                video_buffer1 = BytesIO(results)
 
             
 
@@ -323,23 +327,23 @@ def main():
 
 
                 # # Read the content of the video file
-                # # video_content1 = results.read()
+                video_content1 = results.read()
                 # # Convert the video content to a bytes buffer
-                # video_buffer1 = BytesIO(results)
-                # st.video(video_buffer1)
+                video_buffer1 = BytesIO(results)
+                st.video(video_buffer1)
 
             # Display the processed video
-            # st.video(output_path)            
-            # st.video(results)
+            st.video(output_path)            
+            st.video(results)
             
 
-            # st.success("Video processing completed.")
+            st.success("Video processing completed.")
 
     
     st.subheader("",divider='rainbow')
-    st.write(':orange[ Classes : ⤵️ ]')
+    # st.write(':orange[ Classes : ⤵️ ]')
     cls_name = model.names
-    cls_lst = list(cls_name.values())
-    st.write(f':orange[{cls_lst}]')
+    # cls_lst = list(cls_name.values())
+    # st.write(f':orange[{cls_lst}]')
 if __name__ == '__main__':
     main()
