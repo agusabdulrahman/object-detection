@@ -22,7 +22,19 @@ import numpy as np
 # Set the environment variable
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 logging.basicConfig(level=logging.WARNING)
-st.set_page_config(page_title="Object Detection", page_icon="🤖🤖")
+
+
+
+
+st.set_page_config(
+    page_title="AnalyticaVision", 
+    layout="centered", 
+    page_icon="🤖🤖",
+    menu_items={
+        'Get Help': 'https://www.extremelycoolapp.com/help',
+        'Report a bug': "https://www.extremelycoolapp.com/bug",
+        'About': "# This is a header. This is an *extremely* cool app!"
+    })
 
 # Define the zone polygon
 zone_polygon_m = np.array([[160, 100], 
@@ -30,7 +42,7 @@ zone_polygon_m = np.array([[160, 100],
                          [481, 380], 
                          [481, 100]], dtype=np.int32)
 # # Calculate the center of the polygon
-# center = np.mean(zone_polygon_m, axis=0)
+center = np.mean(zone_polygon_m, axis=0)
 
 # # Compute the vector from the center to each corner
 # vectors = zone_polygon_m - center
@@ -88,18 +100,26 @@ def draw_annotations(frame, frame_number,boxes, masks, names):
     return frame
 
 # Define the initial confidence threshold
-
+st.title("🤖 AnalyticaVision")
+st.subheader("Aplikasi Analysis Visual ")
 
 def main():
-    st.title("🤖 AnalyticaVision")
-    st.subheader("YOLOv8 & Streamlit WebRTC Integration")
     st.sidebar.title("Select an option ⤵️")
-    choice = st.sidebar.radio("", ("Live Webcam Predict", "Capture Image And Predict",":rainbow[Multiple Images Upload -]🖼️🖼️🖼️", "Upload Video"),
-                            captions = ["Live Count in Zone. :red[(Slow)]🐌", "Click and Detect. :orange[(Recommended)] :green[(Super Fast)]⚡⚡", "Upload & Process Multiple Images. :orange[(Recommended)] :green[(Fast)]⚡", "Upload Video & Predict 🏗️:orange[(Work in Progress)]📽️🎞️"], index = 1)
-    conf = st.slider("Score threshold", 0.0, 1.0, 0.3, 0.05)
+    choice = st.sidebar.radio("", ("Live Webcam Predict", 
+                                   "Capture Image And Predict",
+                                   "Multiple Images Upload", 
+                                   "Upload Video"),
+                            captions = ["Live Count in Zone", 
+                                        "Click and Detect.", 
+                                        "Upload & Process Multiple Images.", 
+                                        "Upload Video & Predict :orange[(Work in Progress)]"],
+                            index = 1)
+    # conf = st.slider("Score threshold", 0.0, 1.0, 0.3, 0.05)
 
     if choice == "Live Webcam Predict":
-        # conf = st.slider("Score threshold", 0.0, 1.0, 0.5, 0.05)
+        st.title("AnalyticaVision")
+        st.subheader("Live Realtime Analysis")
+        conf = st.slider("Score threshold", 0.0, 1.0, 0.5, 0.05)
 
         # Define the WebRTC client settings
         client_settings = ClientSettings(
@@ -148,6 +168,7 @@ def main():
 
                 # Convert the frame back to av.VideoFrame
                 annotated_frame = av.VideoFrame.from_ndarray(frame1, format="bgr24")
+                # st.json(count_text)
                 return annotated_frame
 
         # Start the WebRTC streamer
@@ -162,8 +183,10 @@ def main():
                 "audio": False,
             },
             video_processor_factory=ObjectDetector,
-        )
+        )    
+
     elif choice == "Capture Image And Predict":
+        conf = st.slider("Score threshold", 0.0, 1.0, 0.3, 0.05)
         img_file_buffer = st.camera_input("Take a picture")
 
         if img_file_buffer is not None:
@@ -193,7 +216,7 @@ def main():
             annotated_frame1 = box_annotator.annotate(cv2_img, detections=detections)
             annotated_frame1 = label_annotator.annotate(annotated_frame1, detections=detections, labels=labels)
             # Display the count on the screen
-            # count_text = f"Objects in Zone: {zone.current_count}"     # IMP
+            count_text = f"Objects in Zone: {zone.current_count}"     # IMP
             count_text = f"Objects in Frame: {len(detections)}" 
             cv2.putText(annotated_frame1, count_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2, cv2.LINE_AA)
             # Convert the frame back to av.VideoFrame
@@ -205,6 +228,7 @@ def main():
             st.subheader("",divider='rainbow')
 
     elif choice == ":rainbow[Multiple Images Upload -]🖼️🖼️🖼️":
+        conf = st.slider("Score threshold", 0.0, 1.0, 0.3, 0.05)
         uploaded_files = st.file_uploader("Choose a images", type=['png', 'jpg', 'webp', 'bmp'], accept_multiple_files=True)
         for uploaded_file in uploaded_files:
             bytes_data = uploaded_file.read()
@@ -247,6 +271,7 @@ def main():
             st.subheader("",divider='rainbow')
     
     elif choice == "Upload Video":
+        conf = st.slider("Score threshold", 0.0, 1.0, 0.3, 0.05)
         st.title("🏗️Work in Progress📽️🎞️")
         
         # Agus is Working on it...
@@ -312,19 +337,11 @@ def main():
                         video_buffer2 = video_bytes.read()
                         st.video(video_buffer2)
                         st.success("Video processing completed.")
-
-
-
-
                 video_content1 = results.read()
                 # Convert the video content to a bytes buffer
                 video_buffer1 = BytesIO(results)
 
-            
-
             # st.success("Video processing completed.")'''
-
-
 
                 # # Read the content of the video file
                 video_content1 = results.read()
