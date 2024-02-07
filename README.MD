@@ -10,7 +10,9 @@ To run the application, make sure you have the required dependencies installed. 
 
 ```bash
 pip install -r requirements.txt
+```
+
+## Run
 
 run:
 `streamlit run object_detection.py`
-```
